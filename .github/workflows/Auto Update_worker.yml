@@ -40,7 +40,7 @@ jobs:
   update-worker:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write  # 需要写入权限来清理仓库
 
     steps:
     # 初始化阶段 ----------------------------------
@@ -48,6 +48,26 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+
+    # 强制更新预处理阶段（放在最前面）---------------
+    - name: 强制更新预处理
+      if: ${{ github.event.inputs.force == 'true' }}
+      run: |
+        echo "正在执行强制仓库清理..."
+        # 保留的文件列表
+        KEEP_FILES=(
+          ".github/workflows/${GITHUB_WORKFLOW}.yml"
+          "README.md"
+          "$CONFIG_FILE"
+        )
+        
+        # 查找并删除非保留文件
+        find . -mindepth 1 -maxdepth 1 -type f \( ! -name "${KEEP_FILES[0]}" ! -name "${KEEP_FILES[1]}" ! -name "${KEEP_FILES[2]}" \) -exec rm -f {} +
+        echo "已删除所有非保留文件"
+        
+        # 删除空目录（除了.git目录）
+        find . -mindepth 1 -type d -not -path './.git*' -empty -delete
+        echo "已清理空目录"
 
     - name: 设置Node.js环境
       uses: actions/setup-node@v3
@@ -90,30 +110,6 @@ jobs:
           sed -i "s/代码混淆: .*/代码混淆: $OBFUSCATE/" $CONFIG_FILE
         fi
 
-    # 强制更新预处理阶段（提前到更新检查前）----------
-    - name: 强制更新预处理
-      if: ${{ github.event.inputs.force == 'true' }}
-      run: |
-        echo "正在执行强制更新预处理..."
-        # 创建备份目录
-        BACKUP_DIR="backup_$(date +%Y%m%d-%H%M%S)"
-        echo "BACKUP_DIR=$BACKUP_DIR" >> $GITHUB_ENV
-        mkdir -p "$BACKUP_DIR"
-        echo "已创建备份目录: $BACKUP_DIR"
-        
-        # 备份现有worker.js文件
-        if [ -f "$WORKER_FILE" ]; then
-          echo "备份现有 $WORKER_FILE 文件..."
-          cp "$WORKER_FILE" "$BACKUP_DIR/"
-          echo "已备份 $WORKER_FILE 到 $BACKUP_DIR/"
-          
-          # 删除本地worker.js文件
-          rm -f "$WORKER_FILE"
-          echo "本地 $WORKER_FILE 文件已删除"
-        else
-          echo "本地 $WORKER_FILE 文件不存在，无需备份和删除"
-        fi
-
     # 更新检查阶段 ----------------------------------
     - name: 检查更新条件
       id: check_update
@@ -133,7 +129,7 @@ jobs:
           echo "should_update=true" >> $GITHUB_OUTPUT
         fi
 
-    # 文件更新阶段（强制更新和常规更新合并处理）------
+    # 文件更新阶段 ----------------------------------
     - name: 执行文件更新
       if: steps.check_update.outputs.should_update == 'true'
       run: |
@@ -161,19 +157,8 @@ jobs:
           else
             echo "跳过代码混淆（配置为不混淆）"
           fi
-          
-          # 更新成功后删除备份目录
-          if [[ "${{ github.event.inputs.force }}" == "true" && -n "$BACKUP_DIR" && -d "$BACKUP_DIR" ]]; then
-            echo "更新成功，删除备份目录 $BACKUP_DIR..."
-            rm -rf "$BACKUP_DIR"
-            echo "备份目录已删除"
-          fi
         else
           echo "下载失败或文件无效"
-          if [[ "${{ github.event.inputs.force }}" == "true" && -n "$BACKUP_DIR" && -f "$BACKUP_DIR/$WORKER_FILE" ]]; then
-            cp "$BACKUP_DIR/$WORKER_FILE" .
-            echo "已从备份恢复 $WORKER_FILE"
-          fi
           exit 1
         fi
 
@@ -226,7 +211,7 @@ jobs:
         - **自动更新**：每天北京时间0点检查更新
         - **手动触发**：可指定更新模式和混淆选项
         - **代码混淆**：可选高强度混淆保护代码
-        - **强制更新**：彻底清理后重新创建Worker脚本
+        - **强制更新**：彻底清理仓库并重新创建Worker脚本
         - **变更追踪**：自动记录最新提交信息
 
         ## ⚙️ 配置选项说明
@@ -235,11 +220,11 @@ jobs:
         |------|--------|--------|----------|
         | 更新模式 | 自动, 手动 | 自动 | 手动触发/自动更新 |
         | 是否混淆代码 | 是, 否 | 否 | 手动触发/自动更新 |
-        | 强制更新(彻底清理后重新创建) | √, 口 | 口 | 手动触发 |
+        | 强制更新(彻底清理仓库) | √, 口 | 口 | 手动触发 |
 
         ## ⚠️ 注意事项
 
-        1. **强制更新**会删除现有Worker脚本并重新下载，请谨慎使用
+        1. **强制更新**会删除仓库中所有非必要文件，请谨慎使用
         2. 代码混淆后可能影响调试，建议测试环境先禁用混淆
         3. 自动更新仅在更新模式为「自动」时生效
 
@@ -266,7 +251,7 @@ jobs:
           COMMIT_MSG="更新Worker脚本[模式:${{ steps.determine_mode.outputs.update_mode }}][混淆:${{ steps.determine_mode.outputs.obfuscate }}][北京时间]"
           
           if [[ "${{ github.event.inputs.force }}" == "true" ]]; then
-            COMMIT_MSG="强制更新Worker脚本[模式:${{ steps.determine_mode.outputs.update_mode }}][混淆:${{ steps.determine_mode.outputs.obfuscate }}][北京时间]"
+            COMMIT_MSG="强制清理并更新Worker脚本[模式:${{ steps.determine_mode.outputs.update_mode }}][混淆:${{ steps.determine_mode.outputs.obfuscate }}][北京时间]"
           fi
           
           git commit -m "$COMMIT_MSG"
