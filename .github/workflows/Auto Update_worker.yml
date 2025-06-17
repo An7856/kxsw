@@ -175,11 +175,11 @@ jobs:
         echo "正在获取_worker.js提交记录..."
         # 获取最新提交并格式化输出
         LATEST_COMMIT=$(curl -s "https://api.github.com/repos/cmliu/edgetunnel/commits?path=_worker.js&per_page=1" | \
-                  jq -r '.[] | "📅 \(.commit.author.date | sub("T.*"; "")): \(.commit.message | gsub("\n"; " "))"')
+                  jq -r '.[] | "📅 \(.commit.author.date | sub("T.*"; ""))|📝 \(.commit.message | gsub("\n"; " "))"')
         
         # 如果没有获取到记录则显示提示
         if [ -z "$LATEST_COMMIT" ]; then
-          LATEST_COMMIT="暂无提交记录"
+          LATEST_COMMIT="📅 暂无提交时间|📝 暂无更新内容"
         fi
         
         echo "LATEST_COMMIT<<EOF" >> $GITHUB_ENV
@@ -192,6 +192,9 @@ jobs:
       if: steps.check_update.outputs.should_update == 'true' || github.event.inputs.force == 'true'
       run: |
         CURRENT_TIME=$(date +"%Y-%m-%d %H:%M:%S")
+        COMMIT_DATE=$(echo "${{ env.LATEST_COMMIT }}" | cut -d'|' -f1)
+        COMMIT_MSG=$(echo "${{ env.LATEST_COMMIT }}" | cut -d'|' -f2)
+        
         echo "【_worker脚本更新记录】
         🔄 更新模式: ${{ steps.determine_mode.outputs.update_mode }}
         🔒 代码混淆: ${{ steps.determine_mode.outputs.obfuscate }}
@@ -199,7 +202,8 @@ jobs:
         💥 更新类型: ${{ github.event.inputs.force == 'true' && '强制清理更新' || '常规更新' }}
         🌐 时区: 北京时间(UTC+8)
 
-        🆕 最新提交: ${{ env.LATEST_COMMIT }}
+        $COMMIT_DATE
+        $COMMIT_MSG
         " > "$CONFIG_FILE"
         
         if [[ -n "$BACKUP_DIR" && -d "$BACKUP_DIR" ]]; then
