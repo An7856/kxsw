@@ -1,4 +1,4 @@
-name: Worker脚本自动更新系统
+name: Worker脚本自动更新系统（北京时间版）
 
 on:
   workflow_dispatch:
@@ -29,11 +29,12 @@ on:
     branches: [ main ]
   
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 16 * * *'  # 北京时间0点（UTC 16点）
 
 env:
   CONFIG_FILE: '更新记录.txt'
   WORKER_FILE: 'worker.js'
+  TZ: 'Asia/Shanghai'  # 设置全局时区
 
 jobs:
   update-worker:
@@ -63,6 +64,7 @@ jobs:
           更新模式: 自动
           代码混淆: 否
           最后更新时间: 从未更新
+          时区: 北京时间(UTC+8)
           " > $CONFIG_FILE
         fi
 
@@ -112,7 +114,7 @@ jobs:
       if: ${{ github.event.inputs.force == 'true' }}
       run: |
         echo "正在清理旧文件..."
-        BACKUP_DIR="backup_$(date +%s)"
+        BACKUP_DIR="backup_$(date +%Y%m%d-%H%M%S)"
         echo "BACKUP_DIR=$BACKUP_DIR" >> $GITHUB_ENV
         
         mkdir -p "$BACKUP_DIR"
@@ -189,12 +191,13 @@ jobs:
     - name: 更新记录文件
       if: steps.check_update.outputs.should_update == 'true' || github.event.inputs.force == 'true'
       run: |
-        CURRENT_TIME=$(date -u +"%Y-%m-%d %H:%M:%S")
+        CURRENT_TIME=$(date +"%Y-%m-%d %H:%M:%S")
         echo "【Worker脚本更新记录】
         🔄 更新模式: ${{ steps.determine_mode.outputs.update_mode }}
         🔒 代码混淆: ${{ steps.determine_mode.outputs.obfuscate }}
-        ⏰ 最后更新时间: $CURRENT_TIME
+        ⏰ 最后更新时间: $CURRENT_TIME (北京时间)
         💥 更新类型: ${{ github.event.inputs.force == 'true' && '强制清理更新' || '常规更新' }}
+        🌐 时区: 北京时间(UTC+8)
 
         🆕 最新提交: ${{ env.LATEST_COMMIT }}
         " > "$CONFIG_FILE"
@@ -216,7 +219,7 @@ jobs:
 
         这是一个自动更新Cloudflare Worker脚本的工作流，支持以下功能：
 
-        - **自动更新**：每天UTC 0点检查更新
+        - **自动更新**：每天北京时间0点检查更新
         - **手动触发**：可指定更新模式和混淆选项
         - **代码混淆**：可选高强度混淆保护代码
         - **强制更新**：彻底清理后重新创建Worker脚本
@@ -242,7 +245,7 @@ jobs:
         $(cat $CONFIG_FILE)
         \`\`\`
 
-        > 最后生成时间: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        > 最后生成时间: $(date +"%Y-%m-%d %H:%M:%S 北京时间")
         " > README.md
 
         echo "README.md 已生成/更新"
@@ -256,10 +259,10 @@ jobs:
         git add .
         
         if ! git diff --cached --quiet; then
-          COMMIT_MSG="更新Worker脚本[模式:${{ steps.determine_mode.outputs.update_mode }}][混淆:${{ steps.determine_mode.outputs.obfuscate }}]"
+          COMMIT_MSG="更新Worker脚本[模式:${{ steps.determine_mode.outputs.update_mode }}][混淆:${{ steps.determine_mode.outputs.obfuscate }}][北京时间]"
           
           if [[ "${{ github.event.inputs.force }}" == "true" ]]; then
-            COMMIT_MSG="强制更新Worker脚本[模式:${{ steps.determine_mode.outputs.update_mode }}][混淆:${{ steps.determine_mode.outputs.obfuscate }}]"
+            COMMIT_MSG="强制更新Worker脚本[模式:${{ steps.determine_mode.outputs.update_mode }}][混淆:${{ steps.determine_mode.outputs.obfuscate }}][北京时间]"
           fi
           
           git commit -m "$COMMIT_MSG"
