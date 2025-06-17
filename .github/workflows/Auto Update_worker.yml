@@ -90,6 +90,30 @@ jobs:
           sed -i "s/代码混淆: .*/代码混淆: $OBFUSCATE/" $CONFIG_FILE
         fi
 
+    # 强制更新预处理阶段（提前到更新检查前）----------
+    - name: 强制更新预处理
+      if: ${{ github.event.inputs.force == 'true' }}
+      run: |
+        echo "正在执行强制更新预处理..."
+        # 创建备份目录
+        BACKUP_DIR="backup_$(date +%Y%m%d-%H%M%S)"
+        echo "BACKUP_DIR=$BACKUP_DIR" >> $GITHUB_ENV
+        mkdir -p "$BACKUP_DIR"
+        echo "已创建备份目录: $BACKUP_DIR"
+        
+        # 备份现有worker.js文件
+        if [ -f "$WORKER_FILE" ]; then
+          echo "备份现有 $WORKER_FILE 文件..."
+          cp "$WORKER_FILE" "$BACKUP_DIR/"
+          echo "已备份 $WORKER_FILE 到 $BACKUP_DIR/"
+          
+          # 删除本地worker.js文件
+          rm -f "$WORKER_FILE"
+          echo "本地 $WORKER_FILE 文件已删除"
+        else
+          echo "本地 $WORKER_FILE 文件不存在，无需备份和删除"
+        fi
+
     # 更新检查阶段 ----------------------------------
     - name: 检查更新条件
       id: check_update
@@ -109,61 +133,46 @@ jobs:
           echo "should_update=true" >> $GITHUB_OUTPUT
         fi
 
-    # 强制更新预处理阶段 ----------------------------------
-    - name: 强制更新预处理
-      if: ${{ github.event.inputs.force == 'true' }}
-      run: |
-        echo "正在清理旧文件..."
-        BACKUP_DIR="backup_$(date +%Y%m%d-%H%M%S)"
-        echo "BACKUP_DIR=$BACKUP_DIR" >> $GITHUB_ENV
-        
-        mkdir -p "$BACKUP_DIR"
-        
-        if [ -f "$WORKER_FILE" ]; then
-          cp "$WORKER_FILE" "$BACKUP_DIR/"
-          echo "已备份worker文件到$BACKUP_DIR"
-        fi
-        
-        rm -f "$WORKER_FILE"
-        echo "旧文件清理完成"
-
-    # 文件更新阶段 ----------------------------------
+    # 文件更新阶段（强制更新和常规更新合并处理）------
     - name: 执行文件更新
       if: steps.check_update.outputs.should_update == 'true'
       run: |
-        echo "正在下载最新Worker脚本..."
+        echo "正在从远程获取最新Worker脚本..."
         DOWNLOAD_URL="https://raw.githubusercontent.com/cmliu/edgetunnel/main/_worker.js"
         
+        # 下载最新worker文件
         if curl -fsSo "$WORKER_FILE.tmp" "$DOWNLOAD_URL" && grep -q 'addEventListener' "$WORKER_FILE.tmp"; then
           mv "$WORKER_FILE.tmp" "$WORKER_FILE"
           echo "下载成功！文件大小: $(wc -c < "$WORKER_FILE" | numfmt --to=iec)"
+          
+          # 根据混淆选项处理文件
+          if [[ "${{ steps.determine_mode.outputs.obfuscate }}" == "是" ]]; then
+            echo "准备执行代码混淆..."
+            npm install -g javascript-obfuscator
+            
+            ORIGINAL_SIZE=$(wc -c < "$WORKER_FILE" | numfmt --to=iec)
+            if javascript-obfuscator "$WORKER_FILE" --output "$WORKER_FILE" \
+              --options-preset high-obfuscation; then
+              echo "混淆成功！文件大小: $ORIGINAL_SIZE → $(wc -c < "$WORKER_FILE" | numfmt --to=iec)"
+            else
+              echo "混淆失败"
+              exit 1
+            fi
+          else
+            echo "跳过代码混淆（配置为不混淆）"
+          fi
+          
+          # 更新成功后删除备份目录
+          if [[ "${{ github.event.inputs.force }}" == "true" && -n "$BACKUP_DIR" && -d "$BACKUP_DIR" ]]; then
+            echo "更新成功，删除备份目录 $BACKUP_DIR..."
+            rm -rf "$BACKUP_DIR"
+            echo "备份目录已删除"
+          fi
         else
           echo "下载失败或文件无效"
-          if [[ "${{ github.event.inputs.force }}" == "true" && -f "$BACKUP_DIR/$WORKER_FILE" ]]; then
+          if [[ "${{ github.event.inputs.force }}" == "true" && -n "$BACKUP_DIR" && -f "$BACKUP_DIR/$WORKER_FILE" ]]; then
             cp "$BACKUP_DIR/$WORKER_FILE" .
-            echo "已恢复备份文件"
-          fi
-          exit 1
-        fi
-
-    # 代码混淆阶段 ----------------------------------
-    - name: 执行代码混淆
-      if: |
-        (steps.check_update.outputs.should_update == 'true' || github.event.inputs.force == 'true') &&
-        steps.determine_mode.outputs.obfuscate == '是'
-      run: |
-        echo "正在混淆代码..."
-        npm install -g javascript-obfuscator
-        
-        ORIGINAL_SIZE=$(wc -c < "$WORKER_FILE" | numfmt --to=iec)
-        if javascript-obfuscator "$WORKER_FILE" --output "$WORKER_FILE" \
-          --options-preset high-obfuscation; then
-          echo "混淆成功！文件大小: $ORIGINAL_SIZE → $(wc -c < "$WORKER_FILE" | numfmt --to=iec)"
-        else
-          echo "混淆失败"
-          if [[ "${{ github.event.inputs.force }}" == "true" && -f "$BACKUP_DIR/$WORKER_FILE" ]]; then
-            cp "$BACKUP_DIR/$WORKER_FILE" .
-            echo "已恢复原始文件"
+            echo "已从备份恢复 $WORKER_FILE"
           fi
           exit 1
         fi
@@ -201,11 +210,6 @@ jobs:
 
         🆕 最新提交: ${{ env.LATEST_COMMIT }}
         " > "$CONFIG_FILE"
-        
-        if [[ -n "$BACKUP_DIR" && -d "$BACKUP_DIR" ]]; then
-          rm -rf "$BACKUP_DIR"
-          echo "备份文件已清理"
-        fi
         
         echo "更新记录已刷新"
 
