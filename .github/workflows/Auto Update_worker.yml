@@ -32,7 +32,6 @@ on:
     - cron: '0 16 * * *'  # 北京时间0点（UTC 16点）
 
 env:
-  CONFIG_FILE: '更新记录.txt'
   WORKER_FILE: '_worker.js'
   TZ: 'Asia/Shanghai'  # 设置全局时区
 
@@ -54,20 +53,6 @@ jobs:
       with:
         node-version: '18'
 
-    # 配置管理阶段 ----------------------------------
-    - name: 初始化更新记录
-      id: init_config
-      run: |
-        if [ ! -f "$CONFIG_FILE" ]; then
-          echo "正在初始化更新记录文件..."
-          echo "【_worker脚本更新记录】
-          更新模式: 自动
-          代码混淆: 否
-          最后更新时间: 从未更新
-          时区: 北京时间(UTC+8)
-          " > $CONFIG_FILE
-        fi
-
     # 模式判断阶段 ----------------------------------
     - name: 确定运行模式
       id: determine_mode
@@ -77,18 +62,18 @@ jobs:
           OBFUSCATE="${{ github.event.inputs.obfuscate || '否' }}"
           echo "[手动触发] 模式: $UPDATE_MODE, 混淆: $OBFUSCATE"
         else
-          UPDATE_MODE=$(grep -oP '更新模式: \K\S+' $CONFIG_FILE || echo "自动")
-          OBFUSCATE=$(grep -oP '代码混淆: \K\S+' $CONFIG_FILE || echo "否")
+          if grep -q '更新模式: ' README.md; then
+            UPDATE_MODE=$(grep -oP '更新模式: \K\S+' README.md || echo "自动")
+            OBFUSCATE=$(grep -oP '代码混淆: \K\S+' README.md || echo "否")
+          else
+            UPDATE_MODE="自动"
+            OBFUSCATE="否"
+          fi
           echo "[自动触发] 模式: $UPDATE_MODE, 混淆: $OBFUSCATE"
         fi
 
         echo "update_mode=$UPDATE_MODE" >> $GITHUB_OUTPUT
         echo "obfuscate=$OBFUSCATE" >> $GITHUB_OUTPUT
-
-        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-          sed -i "s/更新模式: .*/更新模式: $UPDATE_MODE/" $CONFIG_FILE
-          sed -i "s/代码混淆: .*/代码混淆: $OBFUSCATE/" $CONFIG_FILE
-        fi
 
     # 更新检查阶段 ----------------------------------
     - name: 检查更新条件
@@ -113,19 +98,27 @@ jobs:
     - name: 强制更新预处理
       if: ${{ github.event.inputs.force == 'true' }}
       run: |
-        echo "正在清理旧文件..."
+        echo "正在清理仓库（保留工作流文件）..."
         BACKUP_DIR="backup_$(date +%Y%m%d-%H%M%S)"
         echo "BACKUP_DIR=$BACKUP_DIR" >> $GITHUB_ENV
         
+        # 创建备份目录
         mkdir -p "$BACKUP_DIR"
         
+        # 备份重要文件
         if [ -f "$WORKER_FILE" ]; then
           cp "$WORKER_FILE" "$BACKUP_DIR/"
           echo "已备份_worker文件到$BACKUP_DIR"
         fi
         
-        rm -f "$WORKER_FILE"
-        echo "旧文件清理完成"
+        if [ -f "README.md" ]; then
+          cp "README.md" "$BACKUP_DIR/"
+          echo "已备份README.md到$BACKUP_DIR"
+        fi
+        
+        # 删除除工作流文件外的所有文件
+        find . -mindepth 1 -maxdepth 1 ! -name '.github' ! -name '.git' -exec rm -rf {} +
+        echo "仓库清理完成，仅保留工作流文件"
 
     # 文件更新阶段 ----------------------------------
     - name: 执行文件更新
@@ -137,10 +130,18 @@ jobs:
         if curl -fsSo "$WORKER_FILE.tmp" "$DOWNLOAD_URL" && grep -q 'addEventListener' "$WORKER_FILE.tmp"; then
           mv "$WORKER_FILE.tmp" "$WORKER_FILE"
           echo "下载成功！文件大小: $(wc -c < "$WORKER_FILE" | numfmt --to=iec)"
+          
+          # 强制更新成功后删除备份
+          if [[ "${{ github.event.inputs.force }}" == "true" && -d "$BACKUP_DIR" ]]; then
+            echo "正在清理备份文件..."
+            rm -rf "$BACKUP_DIR"
+            echo "备份文件已删除"
+          fi
         else
           echo "下载失败或文件无效"
-          if [[ "${{ github.event.inputs.force }}" == "true" && -f "$BACKUP_DIR/$WORKER_FILE" ]]; then
-            cp "$BACKUP_DIR/$WORKER_FILE" .
+          if [[ "${{ github.event.inputs.force }}" == "true" && -d "$BACKUP_DIR" ]]; then
+            echo "正在恢复备份文件..."
+            cp "$BACKUP_DIR"/* . || true
             echo "已恢复备份文件"
           fi
           exit 1
@@ -161,8 +162,8 @@ jobs:
           echo "混淆成功！文件大小: $ORIGINAL_SIZE → $(wc -c < "$WORKER_FILE" | numfmt --to=iec)"
         else
           echo "混淆失败"
-          if [[ "${{ github.event.inputs.force }}" == "true" && -f "$BACKUP_DIR/$WORKER_FILE" ]]; then
-            cp "$BACKUP_DIR/$WORKER_FILE" .
+          if [[ "${{ github.event.inputs.force }}" == "true" && -d "$BACKUP_DIR" ]]; then
+            cp "$BACKUP_DIR"/* . || true
             echo "已恢复原始文件"
           fi
           exit 1
@@ -173,11 +174,9 @@ jobs:
       id: get_commits
       run: |
         echo "正在获取_worker.js提交记录..."
-        # 获取最新提交并格式化输出
         LATEST_COMMIT=$(curl -s "https://api.github.com/repos/cmliu/edgetunnel/commits?path=_worker.js&per_page=1" | \
                   jq -r '.[] | "📅 \(.commit.author.date | sub("T.*"; ""))|📝 \(.commit.message | gsub("\n"; " "))"')
         
-        # 如果没有获取到记录则显示提示
         if [ -z "$LATEST_COMMIT" ]; then
           LATEST_COMMIT="📅 暂无提交时间|📝 暂无更新内容"
         fi
@@ -187,69 +186,71 @@ jobs:
         echo "EOF" >> $GITHUB_ENV
         echo "提交记录获取完成"
 
-    # 更新记录阶段 ----------------------------------
-    - name: 更新记录文件
+    # 生成README.md文档 ----------------------------
+    - name: 生成README.md
       if: steps.check_update.outputs.should_update == 'true' || github.event.inputs.force == 'true'
       run: |
         CURRENT_TIME=$(date +"%Y-%m-%d %H:%M:%S")
         COMMIT_DATE=$(echo "${{ env.LATEST_COMMIT }}" | cut -d'|' -f1)
         COMMIT_MSG=$(echo "${{ env.LATEST_COMMIT }}" | cut -d'|' -f2)
         
-        echo "【_worker脚本更新记录】
-        🔄 更新模式: ${{ steps.determine_mode.outputs.update_mode }}
-        🔒 代码混淆: ${{ steps.determine_mode.outputs.obfuscate }}
-        ⏰ 最后更新时间: $CURRENT_TIME (北京时间)
-        💥 更新类型: ${{ github.event.inputs.force == 'true' && '强制清理更新' || '常规更新' }}
-        🌐 时区: 北京时间(UTC+8)
-
-        $COMMIT_DATE
-        $COMMIT_MSG
-        " > "$CONFIG_FILE"
-        
-        if [[ -n "$BACKUP_DIR" && -d "$BACKUP_DIR" ]]; then
-          rm -rf "$BACKUP_DIR"
-          echo "备份文件已清理"
-        fi
-        
-        echo "更新记录已刷新"
-
-    # 生成README.md文档 ----------------------------
-    - name: 生成README.md
-      if: steps.check_update.outputs.should_update == 'true' || github.event.inputs.force == 'true'
-      run: |
         echo "# _worker脚本自动更新系统
 
-        ## 📌 使用说明
+        ## 📌 状态徽章
+
+        ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
+        ![更新模式](https://img.shields.io/badge/更新模式-${{ steps.determine_mode.outputs.update_mode }}-green?style=flat-square)
+        ![代码混淆](https://img.shields.io/badge/代码混淆-${{ steps.determine_mode.outputs.obfuscate }}-orange?style=flat-square)
+        ![最后更新](https://img.shields.io/badge/最后更新-$(date +%Y--%m--%d)-blue?style=flat-square)
+
+        ## 📚 使用说明
 
         这是一个自动更新_worker脚本的工作流，支持以下功能：
 
         - **自动更新**：每天北京时间0点检查更新
         - **手动触发**：可指定更新模式和混淆选项
         - **代码混淆**：可选高强度混淆保护代码
-        - **强制更新**：彻底清理后重新创建_worker脚本
+        - **强制更新**：彻底清理仓库后重新创建_worker脚本（保留工作流文件）
         - **变更追踪**：自动记录最新提交信息
+
+        ## ⚙️ 当前配置
+
+        | 配置项 | 值 |
+        |--------|----|
+        | 🔄 更新模式 | ${{ steps.determine_mode.outputs.update_mode }} |
+        | 🔒 代码混淆 | ${{ steps.determine_mode.outputs.obfuscate }} |
+        | ⏰ 最后更新时间 | $CURRENT_TIME (北京时间) |
+        | 💥 更新类型 | ${{ github.event.inputs.force == 'true' && '强制清理更新' || '常规更新' }} |
+        | 🌐 时区 | 北京时间(UTC+8) |
 
         ## ⚙️ 配置选项说明
 
-        | 描述 | 可选值 | 默认值 | 适用场景 |
-        |------|--------|--------|----------|
-        | 更新模式 | 自动, 手动 | 自动 | 手动触发/自动更新 |
-        | 是否混淆代码 | 是, 否 | 否 | 手动触发/自动更新 |
-        | 强制更新(彻底清理后重新创建) | √, 口 | 口 | 手动触发 |
+        ### 1. 更新模式
+        - **自动**：系统将按计划自动检查更新（默认）
+        - **手动**：仅通过手动触发更新
+
+        ### 2. 代码混淆
+        - **是**：启用高强度代码混淆（使用javascript-obfuscator）
+        - **否**：保持原始代码（默认）
+
+        ### 3. 强制更新
+        - **true**：彻底清理仓库后重新创建（保留工作流文件）
+        - **false**：常规更新（默认）
+
+        > 注意：强制更新会删除除 \`.github\` 工作流目录外的所有文件，请谨慎使用
 
         ## ⚠️ 注意事项
 
-        1. **强制更新**会删除现有_worker脚本并重新下载，请谨慎使用
+        1. **强制更新**会删除除工作流文件外的所有文件并重新下载，请谨慎使用
         2. 代码混淆后可能影响调试，建议测试环境先禁用混淆
         3. 自动更新仅在更新模式为「自动」时生效
 
         ## 🔄 最近更新记录
 
-        \`\`\`
-        $(cat $CONFIG_FILE)
-        \`\`\`
+        $COMMIT_DATE  
+        $COMMIT_MSG
 
-        > 最后生成时间: $(date +"%Y-%m-%d %H:%M:%S 北京时间")
+        > 最后生成时间: $CURRENT_TIME (北京时间)
         " > README.md
 
         echo "README.md 已生成/更新"
