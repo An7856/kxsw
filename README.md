@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2025--11--09-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2025--11--10-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2025-11-09 00:15:49 (北京时间) |
+| ⏰ 最后更新时间 | 2025-11-10 00:15:58 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -54,5 +54,5 @@
 📅 2025-10-20  
 📝 feat: 优化代理IP解析逻辑，添加解析地址端口的异步函数
 
-> 最后生成时间: 2025-11-09 00:15:49 (北京时间)
+> 最后生成时间: 2025-11-10 00:15:58 (北京时间)
 
