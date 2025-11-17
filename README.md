@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2025--11--17-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2025--11--18-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2025-11-17 00:16:08 (北京时间) |
+| ⏰ 最后更新时间 | 2025-11-18 00:20:28 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -51,8 +51,8 @@
 
 ## 🔄 最近更新记录
 
-📅 2025-11-13  
-📝 fix: 修改连接处理中的传输模式为'adaptive'，以动态调整传输效率
+📅 2025-11-17  
+📝 fix: 增强用户ID生成逻辑，支持环境变量UUID格式验证
 
-> 最后生成时间: 2025-11-17 00:16:08 (北京时间)
+> 最后生成时间: 2025-11-18 00:20:28 (北京时间)
 
