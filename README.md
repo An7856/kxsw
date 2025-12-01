@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2025--12--01-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2025--12--02-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2025-12-01 00:17:07 (北京时间) |
+| ⏰ 最后更新时间 | 2025-12-02 00:21:50 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -54,5 +54,5 @@
 📅 2025-11-25  
 📝 fix: 添加TLS过滤逻辑以优化请求优选API的IP地址处理
 
-> 最后生成时间: 2025-12-01 00:17:07 (北京时间)
+> 最后生成时间: 2025-12-02 00:21:50 (北京时间)
 
