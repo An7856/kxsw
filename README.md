@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2025--12--18-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2025--12--19-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2025-12-18 00:20:59 (北京时间) |
+| ⏰ 最后更新时间 | 2025-12-19 00:22:41 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -51,8 +51,8 @@
 
 ## 🔄 最近更新记录
 
-📅 2025-12-16  
-📝 fix: 更新订阅内容生成逻辑，添加其他节点LINK以优化IP选择
+📅 2025-12-18  
+📝 Merge pull request #884 from cmliu/beta2.0  fix: 优化批量替换域名函数，随机化主机选择以提高多样性
 
-> 最后生成时间: 2025-12-18 00:20:59 (北京时间)
+> 最后生成时间: 2025-12-19 00:22:41 (北京时间)
 
