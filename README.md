@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2026--01--14-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2026--01--15-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2026-01-14 00:24:52 (北京时间) |
+| ⏰ 最后更新时间 | 2026-01-15 00:23:42 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -51,8 +51,8 @@
 
 ## 🔄 最近更新记录
 
-📅 2026-01-12  
-📝 fix: 修复UsageAPI配置逻辑，确保正确处理新配置并优化登出路径判断
+📅 2026-01-14  
+📝 fix: 添加Clash订阅配置文件热补丁，支持UUID和ECH配置，优化Singbox处理逻辑
 
-> 最后生成时间: 2026-01-14 00:24:52 (北京时间)
+> 最后生成时间: 2026-01-15 00:23:42 (北京时间)
 
