@@ -1295,7 +1295,7 @@ async function 读取config_JSON(env, hostname, userID, path, 重置配置 = fal
             },
             SUB: null,
             SUBNAME: "edge" + "tunnel",
-            SUBUpdateTime: 6, // 订阅更新时间（小时）
+            SUBUpdateTime: 3, // 订阅更新时间（小时）
             TOKEN: await MD5MD5(hostname + userID),
         },
         订阅转换配置: {
@@ -1354,6 +1354,7 @@ async function 读取config_JSON(env, hostname, userID, path, 重置配置 = fal
     const TLS分片参数 = config_JSON.TLS分片 == 'Shadowrocket' ? `&fragment=${encodeURIComponent('1,40-60,30-50,tlshello')}` : config_JSON.TLS分片 == 'Happ' ? `&fragment=${encodeURIComponent('3,1,tlshello')}` : '';
     if (!config_JSON.Fingerprint) config_JSON.Fingerprint = "chrome";
     if (!config_JSON.ECH) config_JSON.ECH = false;
+    else config_JSON.优选订阅生成.SUBUpdateTime = 1; // 启用 ECH 时强制将订阅更新时间改为 1 小时
     const ECHLINK参数 = config_JSON.ECH ? '&ech=' + encodeURIComponent(await getECH(config_JSON.HOST)) : '';
     config_JSON.LINK = `${config_JSON.协议类型}://${userID}@${host}:443?security=tls&type=${config_JSON.传输协议 + ECHLINK参数}&host=${host}&fp=${config_JSON.Fingerprint}&sni=${host}&path=${encodeURIComponent(config_JSON.启用0RTT ? config_JSON.PATH + '?ed=2560' : config_JSON.PATH) + TLS分片参数}&encryption=none${config_JSON.跳过证书验证 ? '&insecure=1&allowInsecure=1' : ''}#${encodeURIComponent(config_JSON.优选订阅生成.SUBNAME)}`;
     config_JSON.优选订阅生成.TOKEN = await MD5MD5(hostname + userID);
