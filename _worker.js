@@ -1249,7 +1249,7 @@ async function sendMessage(BotToken, ChatID, 日志内容, config_JSON) {
             `🔍 <b>路径：</b><code>${请求URL.pathname + 请求URL.search}</code>\n` +
             `🤖 <b>UA：</b><code>${日志内容.UA}</code>\n` +
             `📅 <b>时间：</b>${请求时间}\n` +
-            `${config_JSON.CF.Usage.success ? `📊 <b>请求用量：</b>${config_JSON.CF.Usage.total}/100000 <b>${((config_JSON.CF.Usage.total / 100000) * 100).toFixed(2)}%</b>\n` : ''}`;
+            `${config_JSON.CF.Usage.success ? `📊 <b>请求用量：</b>${config_JSON.CF.Usage.total}/${config_JSON.CF.Usage.max} <b>${((config_JSON.CF.Usage.total / config_JSON.CF.Usage.max) * 100).toFixed(2)}%</b>\n` : ''}`;
 
         const url = `https://api.telegram.org/bot${BotToken}/sendMessage?chat_id=${ChatID}&parse_mode=HTML&text=${encodeURIComponent(msg)}`;
         return fetch(url, {
