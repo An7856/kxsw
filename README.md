@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2026--01--28-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2026--01--29-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2026-01-28 00:24:22 (北京时间) |
+| ⏰ 最后更新时间 | 2026-01-29 00:29:44 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -51,8 +51,8 @@
 
 ## 🔄 最近更新记录
 
-📅 2026-01-27  
-📝 fix: 更新反代参数获取函数，修正正则表达式以支持更严格的IP和账号匹配
+📅 2026-01-28  
+📝 fix: 更新读取config_JSON函数，修复PATH参数处理逻辑以避免路径错误
 
-> 最后生成时间: 2026-01-28 00:24:22 (北京时间)
+> 最后生成时间: 2026-01-29 00:29:44 (北京时间)
 
