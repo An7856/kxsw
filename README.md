@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2026--02--24-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2026--02--25-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2026-02-24 00:50:34 (北京时间) |
+| ⏰ 最后更新时间 | 2026-02-25 01:00:06 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -51,8 +51,8 @@
 
 ## 🔄 最近更新记录
 
-📅 2026-02-21  
-📝 feat: 优化节点路径处理，增强对逗号的编码支持
+📅 2026-02-24  
+📝 feat: 增强订阅链接处理逻辑，支持备注名并优化IP格式
 
-> 最后生成时间: 2026-02-24 00:50:34 (北京时间)
+> 最后生成时间: 2026-02-25 01:00:06 (北京时间)
 
