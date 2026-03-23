@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2026--03--23-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2026--03--24-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2026-03-23 00:22:57 (北京时间) |
+| ⏰ 最后更新时间 | 2026-03-24 00:52:51 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -51,8 +51,8 @@
 
 ## 🔄 最近更新记录
 
-📅 2026-03-18  
-📝 feat: 更新优选订阅生成器逻辑，支持根据条件选择路径
+📅 2026-03-23  
+📝 feat: 添加有效数据长度函数，优化数据发送逻辑，避免发送空数据
 
-> 最后生成时间: 2026-03-23 00:22:57 (北京时间)
+> 最后生成时间: 2026-03-24 00:52:51 (北京时间)
 
