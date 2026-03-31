@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2026--03--31-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2026--04--01-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2026-03-31 00:50:15 (北京时间) |
+| ⏰ 最后更新时间 | 2026-04-01 00:52:00 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -51,8 +51,8 @@
 
 ## 🔄 最近更新记录
 
-📅 2026-03-23  
-📝 feat: 添加有效数据长度函数，优化数据发送逻辑，避免发送空数据
+📅 2026-03-31  
+📝 feat: 更新读取config_JSON函数，添加UA参数以支持自定义gRPC用户代理设置
 
-> 最后生成时间: 2026-03-31 00:50:15 (北京时间)
+> 最后生成时间: 2026-04-01 00:52:00 (北京时间)
 
