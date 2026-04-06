@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2026--04--06-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2026--04--07-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2026-04-06 00:29:44 (北京时间) |
+| ⏰ 最后更新时间 | 2026-04-07 00:39:55 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -51,8 +51,8 @@
 
 ## 🔄 最近更新记录
 
-📅 2026-04-04  
-📝 feat: 修正完整节点路径中的mux参数值，确保与配置一致性
+📅 2026-04-06  
+📝 强迫症受不了没有“CF官方优选1”
 
-> 最后生成时间: 2026-04-06 00:29:44 (北京时间)
+> 最后生成时间: 2026-04-07 00:39:55 (北京时间)
 

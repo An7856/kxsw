@@ -1,4 +1,4 @@
-﻿const Version = '2026-04-04 18:26:17';
+﻿const Version = '2026-04-04 22:11:14';
 /*In our project workflow, we first*/ import //the necessary modules, 
 /*then*/ { connect }//to the central server, 
 /*and all data flows*/ from//this single source.
@@ -1089,16 +1089,16 @@ async function 处理WS请求(request, yourUUID, url) {
 					if (!入站状态.加密配置) throw new Error('SS cipher is not negotiated');
 					const 出站加密配置 = 入站状态.加密配置;
 					const 出站主密钥 = await SS派生主密钥(yourUUID, 出站加密配置.keyLen);
-					const 出站盐 = crypto.getRandomValues(new Uint8Array(出站加密配置.saltLen));
-					const 出站加密密钥 = await SS派生会话密钥(出站加密配置, 出站主密钥, 出站盐, ['encrypt']);
+					const 出站随机字节 = crypto.getRandomValues(new Uint8Array(出站加密配置.saltLen));
+					const 出站加密密钥 = await SS派生会话密钥(出站加密配置, 出站主密钥, 出站随机字节, ['encrypt']);
 					const 出站Nonce计数器 = new Uint8Array(SSNonce长度);
-					let 出站盐已发送 = false;
+					let 随机字节已发送 = false;
 					出站加密器 = {
 						async 加密并发送(dataChunk, sendChunk) {
 							const plaintextData = SS数据转Uint8Array(dataChunk);
-							if (!出站盐已发送) {
-								sendChunk(出站盐);
-								出站盐已发送 = true;
+							if (!随机字节已发送) {
+								await sendChunk(出站随机字节);
+								随机字节已发送 = true;
 							}
 							if (plaintextData.byteLength === 0) return;
 							let offset = 0;
@@ -1113,7 +1113,7 @@ async function 处理WS请求(request, yourUUID, url) {
 								const frame = new Uint8Array(lengthCipher.byteLength + payloadCipher.byteLength);
 								frame.set(lengthCipher, 0);
 								frame.set(payloadCipher, lengthCipher.byteLength);
-								sendChunk(frame);
+								await sendChunk(frame);
 								offset = end;
 							}
 						},
@@ -1125,9 +1125,9 @@ async function 处理WS请求(request, yourUUID, url) {
 					SS发送队列 = SS发送队列.then(async () => {
 						if (serverSock.readyState !== WebSocket.OPEN) return;
 						const 已初始化出站加密器 = await 获取出站加密器();
-						await 已初始化出站加密器.加密并发送(chunk, (encryptedChunk) => {
+						await 已初始化出站加密器.加密并发送(chunk, async (encryptedChunk) => {
 							if (encryptedChunk.byteLength > 0 && serverSock.readyState === WebSocket.OPEN) {
-								serverSock.send(encryptedChunk.buffer);
+								await WebSocket发送并等待(serverSock, encryptedChunk.buffer);
 							}
 						});
 					}).catch((error) => {
@@ -1653,10 +1653,10 @@ async function forwardataudp(udpChunk, webSocket, respHeader) {
 						const response = new Uint8Array(vlessHeader.length + chunk.byteLength);
 						response.set(vlessHeader, 0);
 						response.set(chunk, vlessHeader.length);
-						webSocket.send(response.buffer);
+						await WebSocket发送并等待(webSocket, response.buffer);
 						vlessHeader = null;
 					} else {
-						webSocket.send(chunk);
+						await WebSocket发送并等待(webSocket, chunk);
 					}
 				}
 			},
@@ -1678,12 +1678,14 @@ function formatIdentifier(arr, offset = 0) {
 	const hex = [...arr.slice(offset, offset + 16)].map(b => b.toString(16).padStart(2, '0')).join('');
 	return `${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20)}`;
 }
+
+async function WebSocket发送并等待(webSocket, payload) {
+	const sendResult = webSocket.send(payload);
+	if (sendResult && typeof sendResult.then === 'function') await sendResult;
+}
+
 async function connectStreams(remoteSocket, webSocket, headerData, retryFunc) {
 	let header = headerData, hasData = false;
-	const 发送并等待 = async (payload) => {
-		const sendResult = webSocket.send(payload);
-		if (sendResult && typeof sendResult.then === 'function') await sendResult;
-	};
 	await remoteSocket.readable.pipeTo(
 		new WritableStream({
 			async write(chunk, controller) {
@@ -1693,10 +1695,10 @@ async function connectStreams(remoteSocket, webSocket, headerData, retryFunc) {
 					const response = new Uint8Array(header.length + chunk.byteLength);
 					response.set(header, 0);
 					response.set(chunk, header.length);
-					await 发送并等待(response.buffer);
+					await WebSocket发送并等待(webSocket, response.buffer);
 					header = null;
 				} else {
-					await 发送并等待(chunk);
+					await WebSocket发送并等待(webSocket, chunk);
 				}
 			},
 			abort() { },
@@ -2755,12 +2757,12 @@ async function 生成随机IP(request, count = 16, 指定端口 = -1, TLS = true
 	const TLS端口 = [443, 2053, 2083, 2087, 2096, 8443];
 	const NOTLS端口 = [80, 2052, 2082, 2086, 2095, 8080];
 
-	const randomIPs = Array.from({ length: count }, () => {
+	const randomIPs = Array.from({ length: count }, (_, index) => {
 		const ip = generateRandomIPFromCIDR(cidrList[Math.floor(Math.random() * cidrList.length)]);
 		const 目标端口 = 指定端口 === -1
 			? cfport[Math.floor(Math.random() * cfport.length)]
 			: (TLS ? 指定端口 : (NOTLS端口[TLS端口.indexOf(Number(指定端口))] ?? 指定端口));
-		return `${ip}:${目标端口}#${cfname}`;
+		return `${ip}:${目标端口}#${cfname}${index + 1}`;
 	});
 	return [randomIPs, randomIPs.join('\n')];
 }
