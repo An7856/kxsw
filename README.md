@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2026--04--16-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2026--04--17-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2026-04-16 00:56:46 (北京时间) |
+| ⏰ 最后更新时间 | 2026-04-17 01:07:55 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -51,8 +51,8 @@
 
 ## 🔄 最近更新记录
 
-📅 2026-04-10  
-📝 feat: 简化获取传输协议配置函数逻辑，提升代码可读性
+📅 2026-04-15  
+📝 feat: 更新版本号并优化木马UDP数据转发逻辑，修正相关函数命名
 
-> 最后生成时间: 2026-04-16 00:56:46 (北京时间)
+> 最后生成时间: 2026-04-17 01:07:55 (北京时间)
 
