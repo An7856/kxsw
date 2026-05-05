@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2026--05--05-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2026--05--06-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2026-05-05 01:25:41 (北京时间) |
+| ⏰ 最后更新时间 | 2026-05-06 01:18:09 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -54,5 +54,5 @@
 📅 2026-05-02  
 📝 Merge pull request #1168 from cmliu/beta2.1-BYOB  Beta2.1 byob
 
-> 最后生成时间: 2026-05-05 01:25:41 (北京时间)
+> 最后生成时间: 2026-05-06 01:18:09 (北京时间)
 
