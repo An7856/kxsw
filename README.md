@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2026--05--21-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2026--05--22-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2026-05-21 02:12:05 (北京时间) |
+| ⏰ 最后更新时间 | 2026-05-22 01:52:57 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -54,5 +54,5 @@
 📅 2026-05-17  
 📝 fix: 更新版本号并优化上行写入队列逻辑以减少上传队列溢出风险
 
-> 最后生成时间: 2026-05-21 02:12:05 (北京时间)
+> 最后生成时间: 2026-05-22 01:52:57 (北京时间)
 
