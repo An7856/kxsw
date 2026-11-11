@@ -5,7 +5,7 @@
 ![工作流状态](https://img.shields.io/badge/工作流-运行中-brightgreen?style=flat-square)
 ![更新模式](https://img.shields.io/badge/更新模式-自动-green?style=flat-square)
 ![代码混淆](https://img.shields.io/badge/代码混淆-否-orange?style=flat-square)
-![最后更新](https://img.shields.io/badge/最后更新-2026--11--11-blue?style=flat-square)
+![最后更新](https://img.shields.io/badge/最后更新-2026--11--12-blue?style=flat-square)
 
 ## 📚 使用说明
 
@@ -23,7 +23,7 @@
 |--------|----|
 | 🔄 更新模式 | 自动 |
 | 🔒 代码混淆 | 否 |
-| ⏰ 最后更新时间 | 2026-11-11 05:36:17 (北京时间) |
+| ⏰ 最后更新时间 | 2026-11-12 06:25:29 (北京时间) |
 | 💥 更新类型 | 常规更新 |
 | 🌐 时区 | 北京时间(UTC+8) |
 
@@ -51,8 +51,8 @@
 
 ## 🔄 最近更新记录
 
-📅 2026-10-08  
-📝 fix: 更新版本号至2026-10-08 22:23:27，修复报错1101信仰
+📅 2026-11-10  
+📝 fix: 修复获取传输协议配置中的xPaddingKey格式
 
-> 最后生成时间: 2026-11-11 05:36:17 (北京时间)
+> 最后生成时间: 2026-11-12 06:25:29 (北京时间)
 
